@@ -1,12 +1,7 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { PlayIcon, PauseIcon, MaximizeIcon, Volume2Icon } from './Icons';
 
-// This is to make Hls available in the window scope
-declare global {
-  interface Window {
-    Hls: any;
-  }
-}
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import Hls from 'hls.js';
+import { PlayIcon, PauseIcon, MaximizeIcon, Volume2Icon } from './Icons';
 
 interface VideoPlayerProps {
   src: string;
@@ -26,14 +21,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src }) => {
     const video = videoRef.current;
     if (!video) return;
     
-    let hls: any;
+    let hls: Hls;
 
     const setupHls = () => {
-        if (window.Hls.isSupported()) {
-          hls = new window.Hls();
+        if (Hls.isSupported()) {
+          hls = new Hls();
           hls.loadSource(src);
           hls.attachMedia(video);
-          hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
             video.play().catch(() => console.log('Autoplay was prevented.'));
             setIsPlaying(true);
           });
