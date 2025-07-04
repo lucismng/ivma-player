@@ -1,7 +1,6 @@
 import { Channel, EpgData, Programme } from '../types';
 
 const M3U_URL = 'https://raw.githubusercontent.com/luongtamlong/Dak-Lak-IPTV/main/daklakiptv.m3u';
-const PROXY_PREFIX = 'https://api.allorigins.win/raw?url=';
 
 
 const parseM3U = (m3uString: string): { channels: Channel[], epgUrl: string | null } => {
@@ -88,7 +87,7 @@ const parseXMLTV = (xmlString: string): EpgData => {
 
 export const fetchAndParseData = async (): Promise<{ channels: Channel[], epgData: EpgData, channelGroups: string[] }> => {
     try {
-        const m3uResponse = await fetch(`${PROXY_PREFIX}${encodeURIComponent(M3U_URL)}`);
+        const m3uResponse = await fetch(M3U_URL);
         if (!m3uResponse.ok) throw new Error(`Failed to fetch M3U: ${m3uResponse.statusText}`);
         const m3uString = await m3uResponse.text();
 
@@ -98,14 +97,14 @@ export const fetchAndParseData = async (): Promise<{ channels: Channel[], epgDat
         if (epgUrl) {
             try {
                 let correctedEpgUrl = epgUrl;
-                // Convert 'github.com/.../raw/...' to 'raw.githubusercontent.com/...' to make it proxy-friendly
+                // Convert 'github.com/.../raw/...' to 'raw.githubusercontent.com/...' which has proper CORS headers
                 if (correctedEpgUrl.includes('github.com') && correctedEpgUrl.includes('/raw/')) {
                     correctedEpgUrl = correctedEpgUrl
                         .replace('github.com', 'raw.githubusercontent.com')
                         .replace('/raw/', '/');
                 }
 
-                const epgResponse = await fetch(`${PROXY_PREFIX}${encodeURIComponent(correctedEpgUrl)}`);
+                const epgResponse = await fetch(correctedEpgUrl);
                 if (epgResponse.ok) {
                     const xmlString = await epgResponse.text();
                     epgData = parseXMLTV(xmlString);
