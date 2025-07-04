@@ -97,7 +97,15 @@ export const fetchAndParseData = async (): Promise<{ channels: Channel[], epgDat
 
         if (epgUrl) {
             try {
-                const epgResponse = await fetch(`${PROXY_PREFIX}${encodeURIComponent(epgUrl)}`);
+                let correctedEpgUrl = epgUrl;
+                // Convert 'github.com/.../raw/...' to 'raw.githubusercontent.com/...' to make it proxy-friendly
+                if (correctedEpgUrl.includes('github.com') && correctedEpgUrl.includes('/raw/')) {
+                    correctedEpgUrl = correctedEpgUrl
+                        .replace('github.com', 'raw.githubusercontent.com')
+                        .replace('/raw/', '/');
+                }
+
+                const epgResponse = await fetch(`${PROXY_PREFIX}${encodeURIComponent(correctedEpgUrl)}`);
                 if (epgResponse.ok) {
                     const xmlString = await epgResponse.text();
                     epgData = parseXMLTV(xmlString);
