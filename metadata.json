@@ -1,0 +1,5 @@
+{
+  "name": "iVMA - IPTV Player",
+  "description": "A powerful web application that allows users to access and watch live TV channels from a provided M3U playlist. The application focuses on a premium user experience with an intuitive, beautiful interface and detailed Electronic Program Guide (EPG) display, inspired by services like Apple TV.",
+  "requestFramePermissions": []
+}
